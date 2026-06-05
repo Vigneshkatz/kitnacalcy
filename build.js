@@ -324,7 +324,7 @@ function makePage(id, p) {
   html = html.replace(/<meta name="description" content="[\s\S]*?">/, `<meta name="description" content="${p.desc}">`);
   html = html.replace(/(<meta name="theme-color"[^>]*>)/, `$1${metaTags(canonical, p.title, p.desc)}`);
   html = html.replace(/<h1>KitnaCalc<\/h1>/, `<h1>${p.h1}</h1>`);
-  html = html.replace(/<body>/, `<body>\n<script>if(!location.hash)history.replaceState(null,'','#/${id}');</script>`);
+  html = html.replace(/<body>/, `<body>\n<script>window.__CALC=${JSON.stringify(id)};</script>`);
   html = html.replace(/<section class="seo">[\s\S]*?<\/section>/, seoSection(p));
   html = html.replace(/<script type="application\/ld\+json">\s*\{"@context":"https:\/\/schema.org","@type":"FAQPage"[\s\S]*?<\/script>/, faqLd(p));
   html = html.replace('</head>', headExtras() + '\n</head>');

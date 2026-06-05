@@ -52,7 +52,7 @@
   .tic{font-size:1.6rem}.tname{font-size:.82rem;font-weight:600;line-height:1.25}
 
   /* calculator view */
-  .back{background:none;border:none;color:var(--accent);font-weight:600;font-size:.9rem;cursor:pointer;padding:4px 0;margin-bottom:6px}
+  .back{background:none;border:none;color:var(--accent);font-weight:600;font-size:.9rem;cursor:pointer;padding:4px 0;margin-bottom:6px;text-decoration:none;display:inline-block}
   .calchead{display:flex;align-items:center;gap:12px;margin-bottom:14px}
   .calchead .ic{font-size:1.8rem}
 
@@ -94,7 +94,7 @@
 
 </head>
 <body>
-<script>if(!location.hash)history.replaceState(null,'','#/fd');</script>
+<script>window.__CALC="fd";</script>
 <header>
   <h1>FD Calculator</h1>
   <p>Kitna tax? Kitna EMI? Kitna SIP? — India's all-in-one money calculator 🇮🇳</p>
@@ -365,7 +365,7 @@ function renderCalc(id){
   document.getElementById('home').style.display='none';
   const view=document.getElementById('view');view.style.display='block';
   document.title=`${c.title} Calculator — All-in-One Financial Calculator India`;
-  let inner=`<button class="back" onclick="location.hash='#/'">← All calculators</button><div class="calchead"><span class="ic">${c.icon}</span><div><h2 style="margin:0">${c.title}</h2><div class="muted">${c.blurb}</div></div></div>`;
+  let inner=`<a class="back" href="../index.html">← All calculators</a><div class="calchead"><span class="ic">${c.icon}</span><div><h2 style="margin:0">${c.title}</h2><div class="muted">${c.blurb}</div></div></div>`;
   window.scrollTo(0,0);
   if(c.custom==='tax'){view.innerHTML=inner+TAX_HTML;calcTax();return;}
   if(c.custom==='gst'){view.innerHTML=inner+GST_HTML;calcGst();return;}
@@ -375,7 +375,7 @@ function renderCalc(id){
 function buildHome(){
   const cats={};Object.entries(CALCS).forEach(([id,c])=>{(cats[c.cat]=cats[c.cat]||[]).push([id,c]);});
   const order=['Tax & Salary','Investments','Loans','Retirement','Everyday'];let html='';
-  order.forEach(cat=>{if(!cats[cat])return;html+=`<h3 class="cattitle">${cat}</h3><div class="grid">`+cats[cat].map(([id,c])=>`<a class="tile" href="#/${id}" data-k="${(c.title+' '+(c.kw||'')).toLowerCase()}"><span class="tic">${c.icon}</span><span class="tname">${c.title}</span></a>`).join('')+`</div>`;});
+  order.forEach(cat=>{if(!cats[cat])return;html+=`<h3 class="cattitle">${cat}</h3><div class="grid">`+cats[cat].map(([id,c])=>`<a class="tile" href="${id}/index.html" data-k="${(c.title+' '+(c.kw||'')).toLowerCase()}"><span class="tic">${c.icon}</span><span class="tname">${c.title}</span></a>`).join('')+`</div>`;});
   document.getElementById('grid').innerHTML=html;
 }
 function searchCalc(q){
@@ -385,7 +385,7 @@ function searchCalc(q){
     g.style.display=any?'':'none';if(g.previousElementSibling)g.previousElementSibling.style.display=any?'':'none';});
 }
 function route(){
-  const id=location.hash.replace('#/','');
+  const id=location.hash.replace('#/','')||window.__CALC||'';
   if(!id||id==='home'){document.getElementById('view').style.display='none';document.getElementById('home').style.display='block';document.title='All-in-One Financial Calculator India — Tax, SIP, EMI, GST, FD (FY 2025-26)';window.scrollTo(0,0);}
   else renderCalc(id);
 }
