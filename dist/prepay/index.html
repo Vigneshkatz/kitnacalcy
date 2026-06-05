@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#0f766e">
+<link rel="canonical" href="https://USERNAME.github.io/kitnacalc/prepay/">
+<meta property="og:title" content="Loan Prepayment Calculator — Interest Saved & Tenure Cut">
+<meta property="og:description" content="See how much interest you save and how many months you shave off your loan by paying a little extra every month.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://USERNAME.github.io/kitnacalc/prepay/">
+<meta name="twitter:card" content="summary">
+<title>Loan Prepayment Calculator — Interest Saved & Tenure Cut</title>
+<meta name="description" content="See how much interest you save and how many months you shave off your loan by paying a little extra every month.">
+<style>
+  :root{
+    --bg:#f4f6f8; --card:#ffffff; --ink:#0f172a; --muted:#64748b;
+    --line:#e2e8f0; --accent:#0f766e; --accent-soft:#ccfbf1; --good:#15803d;
+    --shadow:0 1px 3px rgba(15,23,42,.08),0 8px 24px rgba(15,23,42,.06);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Inter,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.5;-webkit-text-size-adjust:100%}
+  header{background:linear-gradient(135deg,#0f766e,#115e59);color:#fff;padding:22px 16px 18px;text-align:center}
+  header h1{margin:0;font-size:1.25rem;font-weight:700;letter-spacing:.2px}
+  header p{margin:4px 0 0;font-size:.8rem;opacity:.85}
+  .wrap{max-width:640px;margin:0 auto;padding:16px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;margin-bottom:16px;box-shadow:var(--shadow)}
+  .card h2{margin:0 0 14px;font-size:1rem}
+  label{display:block;font-size:.82rem;color:var(--muted);margin:0 0 5px;font-weight:600}
+  .field{margin-bottom:14px}
+  input[type=number],select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;font-size:1rem;background:#fff;color:var(--ink);outline:none;transition:.15s}
+  input[type=number]:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .row{display:flex;gap:10px}.row>*{flex:1}
+  .seg{display:flex;gap:6px;background:#f1f5f9;border-radius:10px;padding:4px}
+  .seg button{flex:1;padding:9px;border:none;background:transparent;border-radius:7px;font-weight:600;font-size:.85rem;color:var(--muted);cursor:pointer}
+  .seg button.on{background:#fff;color:var(--accent);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+  .check{display:flex;align-items:center;gap:9px;font-size:.9rem;color:var(--ink);font-weight:500;cursor:pointer}
+  .check input{width:18px;height:18px;accent-color:var(--accent)}
+  .muted{color:var(--muted);font-size:.78rem}
+  .inwrap{position:relative}
+  .inwrap .prefix{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.95rem}
+  .inwrap .suffix{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:.85rem;font-weight:600}
+
+  /* home grid */
+  .search{width:100%;padding:13px 14px;border:1px solid var(--line);border-radius:12px;font-size:1rem;box-shadow:var(--shadow);outline:none;margin-bottom:6px}
+  .search:focus{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
+  .cattitle{font-size:.78rem;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:18px 4px 8px;font-weight:700}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+  @media(min-width:520px){.grid{grid-template-columns:repeat(3,1fr)}}
+  .tile{display:flex;flex-direction:column;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px 10px;text-decoration:none;color:var(--ink);box-shadow:var(--shadow);transition:.15s;text-align:center}
+  .tile:hover{transform:translateY(-2px);border-color:var(--accent)}
+  .tic{font-size:1.6rem}.tname{font-size:.82rem;font-weight:600;line-height:1.25}
+
+  /* calculator view */
+  .back{background:none;border:none;color:var(--accent);font-weight:600;font-size:.9rem;cursor:pointer;padding:4px 0;margin-bottom:6px}
+  .calchead{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+  .calchead .ic{font-size:1.8rem}
+
+  /* results */
+  .brow{display:flex;justify-content:space-between;font-size:.88rem;padding:5px 0}
+  .brow span:last-child{font-variant-numeric:tabular-nums}
+  .brow.total{font-weight:800;font-size:1.05rem;border-top:1px solid var(--line);margin-top:6px;padding-top:9px;color:var(--accent)}
+  .compare{display:flex;gap:12px}
+  .regime{flex:1;border:2px solid var(--line);border-radius:12px;padding:14px;text-align:center}
+  .regime.best{border-color:var(--accent);background:var(--accent-soft)}
+  .regime .name{font-size:.72rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+  .regime .amt{font-size:1.4rem;font-weight:800;margin:6px 0 2px}
+  .regime .tag{font-size:.72rem;font-weight:700;color:var(--good)}
+  .verdict{text-align:center;margin:14px 0 4px;font-size:.95rem;font-weight:600}
+  .verdict b{color:var(--accent)}
+  .breakdown{margin-top:14px;border-top:1px dashed var(--line);padding-top:12px}
+  details{margin-top:10px}details summary{font-size:.85rem;color:var(--accent);cursor:pointer;font-weight:600}
+  .big{font-size:1.7rem;font-weight:800;text-align:center;margin:6px 0}
+  .split{display:flex;gap:10px;margin-top:12px}
+  .split div{flex:1;background:#f1f5f9;border-radius:10px;padding:10px;text-align:center}
+  .split .l{font-size:.72rem;color:var(--muted);font-weight:700}.split .v{font-size:1rem;font-weight:700;margin-top:2px}
+  .disclaimer{background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:10px;padding:10px 12px;font-size:.76rem;margin-bottom:16px}
+
+  /* SEO footer */
+  .seo{max-width:640px;margin:8px auto 0;padding:0 16px}
+  .seo .card h2{font-size:1.05rem}
+  .seo h3{font-size:.92rem;margin:16px 0 6px}
+  .seo p{font-size:.86rem;color:#334155;margin:0 0 10px}
+  .seo table{width:100%;border-collapse:collapse;font-size:.84rem;margin:6px 0 4px}
+  .seo th,.seo td{text-align:left;padding:7px 8px;border-bottom:1px solid var(--line)}
+  .seo th{color:var(--muted);font-weight:700;font-size:.78rem}
+  .seo td:last-child,.seo th:last-child{text-align:right;font-variant-numeric:tabular-nums}
+  .faq dt{font-weight:700;font-size:.86rem;margin-top:12px}
+  .faq dd{margin:4px 0 0;font-size:.84rem;color:#334155}
+  .tagcloud{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+  .tagcloud span{background:#f1f5f9;color:#475569;border-radius:999px;padding:4px 10px;font-size:.74rem}
+  footer{text-align:center;padding:8px 16px 30px;color:var(--muted);font-size:.72rem}
+</style>
+
+</head>
+<body>
+<script>if(!location.hash)history.replaceState(null,'','#/prepay');</script>
+<header>
+  <h1>Loan Prepayment Calculator</h1>
+  <p>Kitna tax? Kitna EMI? Kitna SIP? — India's all-in-one money calculator 🇮🇳</p>
+</header>
+
+<div class="wrap">
+  <div id="home">
+    <input class="search" id="search" placeholder="Search 24 calculators…" oninput="searchCalc(this.value)" autocomplete="off">
+    <div id="grid"></div>
+  </div>
+  <div id="view" style="display:none"></div>
+</div>
+
+<!-- ============ SEO CONTENT ============ -->
+<section class="seo"><div class="card"><h2>Loan Prepayment Calculator — FY 2025-26</h2><p>Paying extra each month dramatically cuts loan interest. Enter your loan details and a monthly extra payment to see the interest saved and how much earlier your loan closes.</p><h3>Frequently asked questions</h3><dl class="faq"><dt>Does prepaying a loan save money?</dt><dd>Yes. Extra payments go straight to principal, reducing the interest charged over the remaining tenure and closing the loan sooner.</dd><dt>Is it better to prepay or invest?</dt><dd>If your loan rate is higher than your expected investment return, prepaying usually wins; otherwise investing may be better.</dd></dl><p class="muted"><a href="../index.html">← Back to all 24 financial calculators</a></p></div></section>
+
+<footer>
+  KitnaCalc • All-in-One Financial Calculator India • FY 2025-26 / AY 2026-27<br>
+  Works offline • No data leaves your device • Estimates only, not financial or tax advice.
+</footer>
+
+<script>
+/* ===================== helpers ===================== */
+const state = { salaried:1, gstMode:'add', gstSupply:'intra' };
+function inr(n){ if(!isFinite(n))n=0; return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function sipFV(P,annual,years){const i=annual/1200,m=Math.round(years*12);return i===0?P*m:P*((Math.pow(1+i,m)-1)/i)*(1+i);}
+function emiCalc(P,annual,years){const i=annual/1200,m=Math.round(years*12);return i===0?P/m:P*i*Math.pow(1+i,m)/(Math.pow(1+i,m)-1);}
+
+/* ===================== income tax engine ===================== */
+const SLABS={new:[[400000,0],[800000,0.05],[1200000,0.10],[1600000,0.15],[2000000,0.20],[2400000,0.25],[Infinity,0.30]],
+             old:[[250000,0],[500000,0.05],[1000000,0.20],[Infinity,0.30]]};
+function slabTax(t,s){let tax=0,p=0;for(const[c,r]of s){if(t>p){tax+=(Math.min(t,c)-p)*r;p=c}else break}return tax}
+function oldSlabs(a){const e=a==='super'?500000:a==='senior'?300000:250000;const s=[[e,0]];if(e<500000)s.push([500000,0.05]);s.push([1000000,0.20]);s.push([Infinity,0.30]);return s}
+function coreTax(t,reg,a){const s=reg==='new'?SLABS.new:oldSlabs(a);let tax=slabTax(t,s);
+  if(reg==='new'&&t<=1200000)tax=Math.max(0,tax-Math.min(tax,60000));
+  if(reg==='old'&&t<=500000)tax=Math.max(0,tax-Math.min(tax,12500));
+  if(reg==='new'&&t>1200000){tax-=Math.max(0,tax-(t-1200000));}return tax}
+function surchargeRate(i,reg){if(i>50000000)return reg==='old'?0.37:0.25;if(i>20000000)return 0.25;if(i>10000000)return 0.15;if(i>5000000)return 0.10;return 0}
+function thresholdBelow(i){if(i>50000000)return 50000000;if(i>20000000)return 20000000;if(i>10000000)return 10000000;if(i>5000000)return 5000000;return 0}
+function rateJustBelow(T){return T===50000000?0.25:T===20000000?0.15:T===10000000?0.10:0}
+function fullTax(t,reg,a){const base=coreTax(t,reg,a);let sur=base*surchargeRate(t,reg);const T=thresholdBelow(t);
+  if(T>0){const bT=coreTax(T,reg,a);const al=bT+rateJustBelow(T)*bT+(t-T);if(base+sur>al)sur=Math.max(0,al-base);}
+  const cess=(base+sur)*0.04;return{base,sur,cess,total:base+sur+cess,taxable:t}}
+
+/* ===================== custom views: tax + gst ===================== */
+const TAX_HTML=`
+  <div class="card"><h2>Your details</h2>
+    <div class="field"><label>Financial year</label>
+      <select id="fy" oninput="calcTax()"><option value="2025-26">FY 2025-26 (AY 2026-27)</option><option value="2026-27">FY 2026-27 (AY 2027-28) — same slabs</option></select></div>
+    <div class="field"><label>Gross annual income (₹)</label>
+      <input type="number" id="gross" inputmode="numeric" placeholder="e.g. 1200000" oninput="calcTax()">
+      <div class="muted">Total salary / income before any deductions.</div></div>
+    <div class="row">
+      <div class="field"><label>Are you salaried?</label>
+        <div class="seg" id="salariedSeg"><button class="on" data-v="1" onclick="setSeg('salaried',this)">Salaried</button><button data-v="0" onclick="setSeg('salaried',this)">Other</button></div></div>
+      <div class="field"><label>Age group</label>
+        <select id="age" onchange="calcTax()"><option value="below60">Below 60</option><option value="senior">60 – 80</option><option value="super">80+</option></select></div></div>
+    <details><summary>Old-regime deductions (optional)</summary><div style="margin-top:12px">
+      <div class="row"><div class="field"><label>80C (max ₹1.5L)</label><input type="number" id="d80c" inputmode="numeric" placeholder="0" oninput="calcTax()"></div>
+        <div class="field"><label>80D health insurance</label><input type="number" id="d80d" inputmode="numeric" placeholder="0" oninput="calcTax()"></div></div>
+      <div class="row"><div class="field"><label>NPS 80CCD(1B) (max ₹50k)</label><input type="number" id="dnps" inputmode="numeric" placeholder="0" oninput="calcTax()"></div>
+        <div class="field"><label>Home-loan interest (max ₹2L)</label><input type="number" id="dhl" inputmode="numeric" placeholder="0" oninput="calcTax()"></div></div>
+      <div class="row"><div class="field"><label>HRA exemption</label><input type="number" id="dhra" inputmode="numeric" placeholder="0" oninput="calcTax()"></div>
+        <div class="field"><label>Other deductions</label><input type="number" id="dother" inputmode="numeric" placeholder="0" oninput="calcTax()"></div></div></div></details>
+  </div>
+  <div class="card" id="taxResult" style="display:none"><h2>Result</h2>
+    <div class="compare">
+      <div class="regime" id="rNew"><div class="name">New regime</div><div class="amt" id="newAmt">₹0</div><div class="tag" id="newTag">&nbsp;</div></div>
+      <div class="regime" id="rOld"><div class="name">Old regime</div><div class="amt" id="oldAmt">₹0</div><div class="tag" id="oldTag">&nbsp;</div></div></div>
+    <div class="verdict" id="verdict"></div><div class="breakdown" id="bd"></div></div>
+  <div class="disclaimer">⚠️ Estimates only — not tax advice. Surcharge marginal relief at very high incomes is approximate. Verify on the <b>Income Tax e-filing portal</b> or with a CA before filing.</div>`;
+
+const GST_HTML=`
+  <div class="card"><h2>GST calculator</h2>
+    <div class="field"><label>Amount (₹)</label><input type="number" id="gstAmt" inputmode="numeric" placeholder="e.g. 1000" oninput="calcGst()"></div>
+    <div class="field"><label>What is this amount?</label>
+      <div class="seg" id="gstModeSeg"><button class="on" data-v="add" onclick="setSeg('gstMode',this)">Excludes GST (add)</button><button data-v="remove" onclick="setSeg('gstMode',this)">Includes GST (remove)</button></div></div>
+    <div class="row">
+      <div class="field"><label>GST rate</label><select id="gstRate" onchange="onRateChange()"><option value="0">0%</option><option value="5">5%</option><option value="12">12%</option><option value="18" selected>18%</option><option value="28">28%</option><option value="custom">Custom…</option></select></div>
+      <div class="field" id="customRateField" style="display:none"><label>Custom rate (%)</label><input type="number" id="gstCustom" inputmode="numeric" placeholder="e.g. 3" oninput="calcGst()"></div>
+      <div class="field"><label>Supply type</label><div class="seg" id="gstSupplySeg"><button class="on" data-v="intra" onclick="setSeg('gstSupply',this)">Intra-state</button><button data-v="inter" onclick="setSeg('gstSupply',this)">Inter-state</button></div></div></div>
+  </div>
+  <div class="card" id="gstResult" style="display:none"><h2>Result</h2>
+    <div class="brow"><span>Base amount</span><span id="gBase">₹0</span></div>
+    <div class="brow"><span>GST (<span id="gRateLbl">18</span>%)</span><span id="gTax">₹0</span></div>
+    <div class="big" id="gTotal">₹0</div><div class="muted" style="text-align:center" id="gTotalLbl">Total (incl. GST)</div>
+    <div class="split" id="gSplit"><div><div class="l" id="s1l">CGST</div><div class="v" id="s1v">₹0</div></div><div><div class="l" id="s2l">SGST</div><div class="v" id="s2v">₹0</div></div></div></div>`;
+
+function setSeg(key,btn){const p=btn.parentElement;[...p.children].forEach(b=>b.classList.remove('on'));btn.classList.add('on');state[key]=isNaN(btn.dataset.v)?btn.dataset.v:Number(btn.dataset.v);key==='salaried'?calcTax():calcGst();}
+function val(id){const v=parseFloat((document.getElementById(id)||{}).value);return isNaN(v)?0:Math.max(0,v);}
+
+function calcTax(){
+  const gross=val('gross'),res=document.getElementById('taxResult');if(!res)return;
+  if(gross<=0){res.style.display='none';return;}res.style.display='block';
+  const age=document.getElementById('age').value,sal=state.salaried===1;
+  const N=fullTax(Math.max(0,gross-(sal?75000:0)),'new',age);
+  const ded=Math.min(val('d80c'),150000)+val('d80d')+Math.min(val('dnps'),50000)+Math.min(val('dhl'),200000)+val('dhra')+val('dother');
+  const O=fullTax(Math.max(0,gross-(sal?50000:0)-ded),'old',age);
+  document.getElementById('newAmt').textContent=inr(N.total);document.getElementById('oldAmt').textContent=inr(O.total);
+  const rNew=document.getElementById('rNew'),rOld=document.getElementById('rOld'),newTag=document.getElementById('newTag'),oldTag=document.getElementById('oldTag');
+  rNew.classList.remove('best');rOld.classList.remove('best');newTag.innerHTML='&nbsp;';oldTag.innerHTML='&nbsp;';
+  const diff=Math.abs(N.total-O.total),v=document.getElementById('verdict');
+  if(N.total<O.total){rNew.classList.add('best');newTag.textContent='✓ Lower';v.innerHTML=`Pick the <b>New Regime</b> — you save <b>${inr(diff)}</b>/year.`;}
+  else if(O.total<N.total){rOld.classList.add('best');oldTag.textContent='✓ Lower';v.innerHTML=`Pick the <b>Old Regime</b> — you save <b>${inr(diff)}</b>/year.`;}
+  else v.innerHTML='Both regimes cost the same.';
+  const best=N.total<=O.total?N:O,name=N.total<=O.total?'New regime':'Old regime';
+  document.getElementById('bd').innerHTML=`
+    <div class="brow"><span>Taxable income (${name})</span><span>${inr(best.taxable)}</span></div>
+    <div class="brow"><span>Income tax</span><span>${inr(best.base)}</span></div>
+    ${best.sur>0?`<div class="brow"><span>Surcharge</span><span>${inr(best.sur)}</span></div>`:''}
+    <div class="brow"><span>Health &amp; education cess (4%)</span><span>${inr(best.cess)}</span></div>
+    <div class="brow total"><span>Total tax payable</span><span>${inr(best.total)}</span></div>
+    <div class="brow"><span>Effective rate</span><span>${gross>0?((best.total/gross)*100).toFixed(1):0}%</span></div>
+    <div class="brow"><span>Take-home (after tax)</span><span>${inr(gross-best.total)}</span></div>`;
+}
+function onRateChange(){document.getElementById('customRateField').style.display=document.getElementById('gstRate').value==='custom'?'block':'none';calcGst();}
+function calcGst(){
+  const amt=val('gstAmt'),res=document.getElementById('gstResult');if(!res)return;
+  if(amt<=0){res.style.display='none';return;}res.style.display='block';
+  const sel=document.getElementById('gstRate').value,rate=sel==='custom'?val('gstCustom'):Number(sel);
+  let base,tax,total;if(state.gstMode==='add'){base=amt;tax=amt*rate/100;total=base+tax;}else{base=amt/(1+rate/100);tax=amt-base;total=amt;}
+  document.getElementById('gBase').textContent=inr(base);document.getElementById('gTax').textContent=inr(tax);
+  document.getElementById('gRateLbl').textContent=rate;document.getElementById('gTotal').textContent=inr(total);
+  document.getElementById('gTotalLbl').textContent=state.gstMode==='add'?'Total (incl. GST)':'You paid (incl. GST)';
+  const s1l=document.getElementById('s1l'),s2l=document.getElementById('s2l'),s1v=document.getElementById('s1v'),s2v=document.getElementById('s2v');
+  if(state.gstSupply==='intra'){s1l.textContent='CGST';s2l.textContent='SGST';s1v.textContent=inr(tax/2);s2v.textContent=inr(tax/2);}
+  else{s1l.textContent='IGST';s2l.textContent='Total tax';s1v.textContent=inr(tax);s2v.textContent=inr(tax);}
+}
+
+/* ===================== generic calculators ===================== */
+// field types: num (money/number), pct, year, month, select, toggle
+const M=(id,label,def,extra={})=>({id,label,default:def,type:'num',prefix:'₹',...extra});
+const PCT=(id,label,def,extra={})=>({id,label,default:def,type:'num',suffix:'%',...extra});
+const YR=(id,label,def,extra={})=>({id,label,default:def,type:'num',suffix:'yrs',...extra});
+
+const CALCS={
+  'income-tax':{cat:'Tax & Salary',icon:'🧾',title:'Income Tax',blurb:'New vs old regime, FY 2025-26',custom:'tax',kw:'tax regime salary 87a rebate'},
+  'gst':{cat:'Tax & Salary',icon:'🧮',title:'GST Calculator',blurb:'Add/remove GST · CGST SGST IGST',custom:'gst',kw:'gst cgst sgst igst'},
+  'ctc':{cat:'Tax & Salary',icon:'💼',title:'Salary / In-hand',blurb:'CTC to monthly take-home',kw:'ctc in hand salary',
+    fields:[M('ctc','Annual CTC (₹)',1200000),PCT('basicpct','Basic as % of CTC',50)],
+    compute(v){const basic=v.ctc*v.basicpct/100,ePF=basic*0.12,grat=basic*0.0481,empPF=basic*0.12,ptax=2400;
+      const taxable=Math.max(0,v.ctc-ePF-75000),tax=fullTax(taxable,'new','below60').total;
+      const ih=v.ctc-ePF-grat-empPF-ptax-tax;
+      return{rows:[{label:'Basic (assumed)',value:inr(basic)},{label:'Income tax (new regime)',value:inr(tax)},
+        {label:'Employee PF + prof. tax',value:inr(empPF+ptax)},{label:'Annual in-hand',value:inr(ih)},
+        {label:'Monthly in-hand',value:inr(ih/12),strong:true}],
+        note:`Rough estimate (new regime, basic = ${v.basicpct}% of CTC). Actual depends on your salary structure.`};}},
+  'hra':{cat:'Tax & Salary',icon:'🏠',title:'HRA Exemption',blurb:'How much HRA is tax-free',kw:'house rent allowance',
+    fields:[M('basic','Basic salary / year (₹)',500000),M('hra','HRA received / year (₹)',250000),M('rent','Rent paid / year (₹)',240000),{id:'metro',label:'I live in a metro city',type:'toggle',default:true}],
+    compute(v){const ex=Math.min(v.hra,Math.max(0,v.rent-0.1*v.basic),(v.metro?0.5:0.4)*v.basic);
+      return{rows:[{label:'HRA received',value:inr(v.hra)},{label:'Exempt HRA',value:inr(ex),strong:true},{label:'Taxable HRA',value:inr(Math.max(0,v.hra-ex))}],
+        note:`Exemption = least of: actual HRA, rent − 10% of basic, ${v.metro?'50%':'40%'} of basic (annual figures).`};}},
+  'gratuity':{cat:'Tax & Salary',icon:'🤝',title:'Gratuity',blurb:'Payout on leaving a job',kw:'gratuity',
+    fields:[M('salary','Last drawn salary / month, basic+DA (₹)',50000),YR('years','Years of service',10)],
+    compute(v){const g=v.salary*15*v.years/26;
+      return{rows:[{label:'Years of service',value:v.years+' yrs'},{label:'Gratuity amount',value:inr(g),strong:true},{label:'Tax-exempt (max ₹20L)',value:inr(Math.min(g,2000000))}],
+        note:v.years<5?'⚠️ You usually need 5+ years of continuous service to be eligible.':'Formula: last salary × 15 × years ÷ 26.'};}},
+
+  'sip':{cat:'Investments',icon:'📈',title:'SIP',blurb:'Monthly mutual-fund investing',kw:'sip mutual fund',
+    fields:[M('monthly','Monthly investment (₹)',5000),PCT('rate','Expected return',12),YR('years','Period',10)],
+    compute(v){const fv=sipFV(v.monthly,v.rate,v.years),inv=v.monthly*Math.round(v.years*12);
+      return{rows:[{label:'Invested',value:inr(inv)},{label:'Est. returns',value:inr(fv-inv)},{label:'Total value',value:inr(fv),strong:true}]};}},
+  'lumpsum':{cat:'Investments',icon:'💰',title:'Lumpsum',blurb:'One-time investment growth',kw:'lumpsum',
+    fields:[M('amount','Investment amount (₹)',100000),PCT('rate','Expected return',12),YR('years','Period',10)],
+    compute(v){const fv=v.amount*Math.pow(1+v.rate/100,v.years);
+      return{rows:[{label:'Invested',value:inr(v.amount)},{label:'Est. returns',value:inr(fv-v.amount)},{label:'Total value',value:inr(fv),strong:true}]};}},
+  'stepupsip':{cat:'Investments',icon:'⏫',title:'Step-up SIP',blurb:'SIP that rises every year',kw:'step up top up sip',
+    fields:[M('monthly','Starting monthly SIP (₹)',5000),PCT('stepup','Annual step-up',10),PCT('rate','Expected return',12),YR('years','Period',10)],
+    compute(v){const i=v.rate/1200;let bal=0,amt=v.monthly,inv=0;for(let y=0;y<Math.round(v.years);y++){for(let m=0;m<12;m++){bal=(bal+amt)*(1+i);inv+=amt;}amt*=(1+v.stepup/100);}
+      return{rows:[{label:'Invested',value:inr(inv)},{label:'Est. returns',value:inr(bal-inv)},{label:'Total value',value:inr(bal),strong:true}],note:`SIP increases ${v.stepup}% every year.`};}},
+  'goalsip':{cat:'Investments',icon:'🎯',title:'Goal SIP',blurb:'SIP needed to hit a target',kw:'goal target sip',
+    fields:[M('target','Target amount (₹)',1000000),PCT('rate','Expected return',12),YR('years','Period',10)],
+    compute(v){const i=v.rate/1200,m=Math.round(v.years*12),f=i===0?m:((Math.pow(1+i,m)-1)/i)*(1+i),P=v.target/f;
+      return{rows:[{label:'Target amount',value:inr(v.target)},{label:'In',value:`${v.years} yrs @ ${v.rate}%`},{label:'Required monthly SIP',value:inr(P),strong:true},{label:'Total you invest',value:inr(P*m)}]};}},
+  'swp':{cat:'Investments',icon:'🏧',title:'SWP',blurb:'Monthly withdrawals from a corpus',kw:'systematic withdrawal',
+    fields:[M('corpus','Starting corpus (₹)',1000000),M('withdraw','Monthly withdrawal (₹)',8000),PCT('rate','Expected return',8),YR('years','Period',20)],
+    compute(v){const i=v.rate/1200;let bal=v.corpus,months=0,wd=0,dep=false;const m=Math.round(v.years*12);
+      for(let k=0;k<m;k++){bal=bal*(1+i)-v.withdraw;wd+=v.withdraw;months++;if(bal<=0){dep=true;break;}}
+      return{rows:[{label:'Starting corpus',value:inr(v.corpus)},{label:'Monthly withdrawal',value:inr(v.withdraw)},{label:'Total withdrawn',value:inr(wd)},
+        dep?{label:'Corpus runs out in',value:(months/12).toFixed(1)+' yrs',strong:true}:{label:`Balance after ${v.years} yrs`,value:inr(bal),strong:true}]};}},
+  'fd':{cat:'Investments',icon:'🏦',title:'Fixed Deposit',blurb:'FD maturity & interest',kw:'fd fixed deposit',
+    fields:[M('principal','Deposit amount (₹)',100000),PCT('rate','Interest rate',7),YR('years','Period',5),{id:'freq',label:'Compounding',type:'select',default:4,options:[{v:1,l:'Yearly'},{v:2,l:'Half-yearly'},{v:4,l:'Quarterly'},{v:12,l:'Monthly'}]}],
+    compute(v){const fv=v.principal*Math.pow(1+v.rate/100/v.freq,v.freq*v.years);
+      return{rows:[{label:'Principal',value:inr(v.principal)},{label:'Interest earned',value:inr(fv-v.principal)},{label:'Maturity value',value:inr(fv),strong:true}]};}},
+  'rd':{cat:'Investments',icon:'🪙',title:'Recurring Deposit',blurb:'Monthly RD maturity',kw:'rd recurring deposit',
+    fields:[M('deposit','Monthly deposit (₹)',5000),PCT('rate','Interest rate',7),{id:'months',label:'Months',type:'num',suffix:'mo',default:60}],
+    compute(v){const i=v.rate/1200;let bal=0,m=Math.round(v.months);for(let k=0;k<m;k++)bal=(bal+v.deposit)*(1+i);const inv=v.deposit*m;
+      return{rows:[{label:'Total deposited',value:inr(inv)},{label:'Interest earned',value:inr(bal-inv)},{label:'Maturity value',value:inr(bal),strong:true}],note:'Indicative (monthly compounding).'};}},
+  'ppf':{cat:'Investments',icon:'🛡️',title:'PPF',blurb:'Public Provident Fund growth',kw:'ppf public provident fund',
+    fields:[M('deposit','Yearly deposit (₹)',150000),PCT('rate','Interest rate',7.1),YR('years','Period',15)],
+    compute(v){let bal=0,y=Math.round(v.years);for(let k=0;k<y;k++)bal=(bal+v.deposit)*(1+v.rate/100);const inv=v.deposit*y;
+      return{rows:[{label:'Total deposited',value:inr(inv)},{label:'Interest earned',value:inr(bal-inv)},{label:'Maturity value',value:inr(bal),strong:true}],note:'PPF has a 15-year lock-in; current rate ~7.1%.'};}},
+  'compound':{cat:'Investments',icon:'🔁',title:'Compound Interest',blurb:'Grow money with compounding',kw:'compound interest',
+    fields:[M('principal','Principal (₹)',100000),PCT('rate','Interest rate',8),YR('years','Period',5),{id:'freq',label:'Compounding',type:'select',default:1,options:[{v:1,l:'Yearly'},{v:2,l:'Half-yearly'},{v:4,l:'Quarterly'},{v:12,l:'Monthly'}]}],
+    compute(v){const A=v.principal*Math.pow(1+v.rate/100/v.freq,v.freq*v.years);
+      return{rows:[{label:'Principal',value:inr(v.principal)},{label:'Interest',value:inr(A-v.principal)},{label:'Maturity amount',value:inr(A),strong:true}]};}},
+  'simple':{cat:'Investments',icon:'➕',title:'Simple Interest',blurb:'Flat interest calculation',kw:'simple interest',
+    fields:[M('principal','Principal (₹)',100000),PCT('rate','Interest rate',8),YR('years','Period',5)],
+    compute(v){const si=v.principal*v.rate*v.years/100;
+      return{rows:[{label:'Principal',value:inr(v.principal)},{label:'Simple interest',value:inr(si)},{label:'Total amount',value:inr(v.principal+si),strong:true}]};}},
+
+  'emi':{cat:'Loans',icon:'🏠',title:'Loan EMI',blurb:'Home / car / personal EMI',kw:'emi loan home car',
+    fields:[M('amount','Loan amount (₹)',2500000),PCT('rate','Interest rate',9),YR('years','Tenure',20)],
+    compute(v){const e=emiCalc(v.amount,v.rate,v.years),m=Math.round(v.years*12),total=e*m;
+      return{rows:[{label:'Monthly EMI',value:inr(e),strong:true},{label:'Principal',value:inr(v.amount)},{label:'Total interest',value:inr(total-v.amount)},{label:'Total payment',value:inr(total)}]};}},
+  'prepay':{cat:'Loans',icon:'✂️',title:'Loan Prepayment',blurb:'Interest saved with extra EMI',kw:'prepayment part payment',
+    fields:[M('amount','Loan amount (₹)',2500000),PCT('rate','Interest rate',9),YR('years','Tenure',20),M('extra','Extra payment / month (₹)',5000)],
+    compute(v){const i=v.rate/1200,baseE=emiCalc(v.amount,v.rate,v.years),m=Math.round(v.years*12),baseInt=baseE*m-v.amount;
+      let bal=v.amount,months=0,paidInt=0,pay=baseE+v.extra;while(bal>0&&months<3000){const int=bal*i;let pr=pay-int;if(pr>bal)pr=bal;bal-=pr;paidInt+=int;months++;}
+      return{rows:[{label:'EMI',value:inr(baseE)},{label:'Interest without prepay',value:inr(baseInt)},{label:`Interest with ₹${v.extra}/mo extra`,value:inr(paidInt)},
+        {label:'Interest saved',value:inr(baseInt-paidInt),strong:true},{label:'Loan closes earlier by',value:`${Math.round(m-months)} months (${((m-months)/12).toFixed(1)} yrs)`}]};}},
+  'affordability':{cat:'Loans',icon:'📊',title:'Loan Eligibility',blurb:'Max loan from your EMI budget',kw:'eligibility affordability',
+    fields:[M('emi','EMI you can afford / month (₹)',25000),PCT('rate','Interest rate',9),YR('years','Tenure',20)],
+    compute(v){const i=v.rate/1200,m=Math.round(v.years*12),P=i===0?v.emi*m:v.emi*(Math.pow(1+i,m)-1)/(i*Math.pow(1+i,m));
+      return{rows:[{label:'Affordable EMI',value:inr(v.emi)},{label:'Tenure',value:v.years+' yrs'},{label:'Max loan you can take',value:inr(P),strong:true}]};}},
+
+  'nps':{cat:'Retirement',icon:'👴',title:'NPS',blurb:'Pension corpus at 60',kw:'nps national pension',
+    fields:[M('monthly','Monthly contribution (₹)',5000),{id:'age',label:'Current age',type:'num',suffix:'yrs',default:30},{id:'retire',label:'Retirement age',type:'num',suffix:'yrs',default:60},PCT('rate','Expected return',10),PCT('annuitypct','Annuity portion',40),PCT('annuityreturn','Annuity return',6)],
+    compute(v){const yrs=Math.max(0,v.retire-v.age),corpus=sipFV(v.monthly,v.rate,yrs),annC=corpus*v.annuitypct/100,lump=corpus-annC,pension=annC*v.annuityreturn/100/12;
+      return{rows:[{label:'Years invested',value:yrs+' yrs'},{label:'Total NPS corpus at 60',value:inr(corpus)},{label:`Lump sum (${100-v.annuitypct}%, tax-free)`,value:inr(lump)},
+        {label:`Annuity corpus (${v.annuitypct}%)`,value:inr(annC)},{label:'Est. monthly pension',value:inr(pension),strong:true}],note:'At least 40% of the corpus must buy an annuity at age 60.'};}},
+  'epf':{cat:'Retirement',icon:'🧱',title:'EPF',blurb:'Provident fund at retirement',kw:'epf pf provident fund',
+    fields:[M('basic','Monthly basic + DA (₹)',25000),M('current','Current EPF balance (₹)',0),PCT('hike','Annual salary hike',5),PCT('rate','EPF interest rate',8.25),YR('years','Years to retirement',30)],
+    compute(v){const i=v.rate/1200;let bal=v.current||0,basic=v.basic,inv=v.current||0,months=Math.round(v.years*12);
+      for(let mo=1;mo<=months;mo++){const c=basic*15.67/100;bal=(bal+c)*(1+i);inv+=c;if(mo%12===0)basic*=(1+v.hike/100);}
+      return{rows:[{label:'Total contributions',value:inr(inv)},{label:'Interest earned',value:inr(bal-inv)},{label:'EPF corpus at retirement',value:inr(bal),strong:true}],
+        note:'Assumes 15.67% of basic (employee 12% + employer 3.67%) to EPF; EPS portion excluded. Indicative.'};}},
+  'retirement':{cat:'Retirement',icon:'🌴',title:'Retirement Corpus',blurb:'How much you need to retire',kw:'retirement corpus fire',
+    fields:[M('expense','Monthly expense today (₹)',40000),YR('years','Years to retirement',25),PCT('inflation','Inflation',6),PCT('postreturn','Return after retirement',8),{id:'retireyears',label:'Years in retirement',type:'num',suffix:'yrs',default:25}],
+    compute(v){const fExp=v.expense*Math.pow(1+v.inflation/100,v.years),annual=fExp*12,real=((1+v.postreturn/100)/(1+v.inflation/100))-1;
+      const corpus=Math.abs(real)<1e-6?annual*v.retireyears:annual*(1-Math.pow(1+real,-v.retireyears))/real;
+      return{rows:[{label:'Monthly expense at retirement',value:inr(fExp)},{label:'First-year annual expense',value:inr(annual)},{label:'Corpus needed at retirement',value:inr(corpus),strong:true}],
+        note:'Uses inflation-adjusted (real) returns during retirement. A guide, not a guarantee.'};}},
+
+  'inflation':{cat:'Everyday',icon:'📉',title:'Inflation',blurb:'Future cost of money',kw:'inflation purchasing power',
+    fields:[M('amount','Amount today (₹)',100000),PCT('rate','Inflation rate',6),YR('years','Years',10)],
+    compute(v){const fut=v.amount*Math.pow(1+v.rate/100,v.years),pp=v.amount/Math.pow(1+v.rate/100,v.years);
+      return{rows:[{label:"Today's cost",value:inr(v.amount)},{label:`Cost after ${v.years} yrs`,value:inr(fut),strong:true},{label:`Today's ₹${v.amount} will be worth`,value:inr(pp)}],note:`At ${v.rate}% average inflation.`};}},
+  'discount':{cat:'Everyday',icon:'🏷️',title:'Discount',blurb:'Sale price & savings',kw:'discount off sale',
+    fields:[M('price','Original price (₹)',2000),PCT('discount','Discount',20)],
+    compute(v){const off=v.price*v.discount/100;return{rows:[{label:'Original price',value:inr(v.price)},{label:'You save',value:inr(off)},{label:'Final price',value:inr(v.price-off),strong:true}]};}},
+  'tip':{cat:'Everyday',icon:'🍽️',title:'Tip & Split',blurb:'Tip and split a bill',kw:'tip split bill restaurant',
+    fields:[M('bill','Bill amount (₹)',1500),PCT('tip','Tip',10),{id:'people',label:'Split between',type:'num',suffix:'ppl',default:2}],
+    compute(v){const t=v.bill*v.tip/100,total=v.bill+t,ppl=Math.max(1,v.people);
+      return{rows:[{label:'Tip',value:inr(t)},{label:'Total bill',value:inr(total)},{label:`Per person (${ppl})`,value:inr(total/ppl),strong:true}]};}},
+};
+
+/* ===================== rendering / router ===================== */
+let currentCalc=null;
+function fieldHTML(f){
+  if(f.type==='select')return `<div class="field"><label>${f.label}</label><select id="f_${f.id}" oninput="recompute()">${f.options.map(o=>`<option value="${o.v}" ${o.v==f.default?'selected':''}>${o.l}</option>`).join('')}</select></div>`;
+  if(f.type==='toggle')return `<label class="check" style="margin-bottom:14px"><input type="checkbox" id="f_${f.id}" ${f.default?'checked':''} oninput="recompute()"> ${f.label}</label>`;
+  const suf=f.suffix?`<span class="suffix">${f.suffix}</span>`:'';
+  return `<div class="field"><label>${f.label}</label><div class="inwrap">${f.prefix?`<span class="prefix">${f.prefix}</span>`:''}<input type="number" id="f_${f.id}" inputmode="decimal" value="${f.default!==undefined?f.default:''}" oninput="recompute()" style="${f.prefix?'padding-left:26px':''}${f.suffix?';padding-right:42px':''}">${suf}</div></div>`;
+}
+function showResult(res){
+  const el=document.getElementById('calcResult');el.style.display='block';
+  el.innerHTML='<h2>Result</h2>'+res.rows.map(r=>`<div class="brow ${r.strong?'total':''}"><span>${r.label}</span><span>${r.value}</span></div>`).join('')+(res.note?`<div class="muted" style="margin-top:10px">${res.note}</div>`:'');
+}
+function recompute(){
+  const c=CALCS[currentCalc];if(!c||c.custom)return;const v={};
+  c.fields.forEach(f=>{const el=document.getElementById('f_'+f.id);if(!el)return;
+    if(f.type==='toggle')v[f.id]=el.checked;else if(f.type==='select'){const x=el.value;v[f.id]=isNaN(x)?x:Number(x);}else v[f.id]=parseFloat(el.value)||0;});
+  let res;try{res=c.compute(v);}catch(e){return;}showResult(res);
+}
+function renderCalc(id){
+  const c=CALCS[id];if(!c){location.hash='#/';return;}currentCalc=id;
+  document.getElementById('home').style.display='none';
+  const view=document.getElementById('view');view.style.display='block';
+  document.title=`${c.title} Calculator — All-in-One Financial Calculator India`;
+  let inner=`<button class="back" onclick="location.hash='#/'">← All calculators</button><div class="calchead"><span class="ic">${c.icon}</span><div><h2 style="margin:0">${c.title}</h2><div class="muted">${c.blurb}</div></div></div>`;
+  window.scrollTo(0,0);
+  if(c.custom==='tax'){view.innerHTML=inner+TAX_HTML;calcTax();return;}
+  if(c.custom==='gst'){view.innerHTML=inner+GST_HTML;calcGst();return;}
+  view.innerHTML=inner+`<div class="card">${c.fields.map(fieldHTML).join('')}</div><div class="card" id="calcResult" style="display:none"></div>`;
+  recompute();
+}
+function buildHome(){
+  const cats={};Object.entries(CALCS).forEach(([id,c])=>{(cats[c.cat]=cats[c.cat]||[]).push([id,c]);});
+  const order=['Tax & Salary','Investments','Loans','Retirement','Everyday'];let html='';
+  order.forEach(cat=>{if(!cats[cat])return;html+=`<h3 class="cattitle">${cat}</h3><div class="grid">`+cats[cat].map(([id,c])=>`<a class="tile" href="#/${id}" data-k="${(c.title+' '+(c.kw||'')).toLowerCase()}"><span class="tic">${c.icon}</span><span class="tname">${c.title}</span></a>`).join('')+`</div>`;});
+  document.getElementById('grid').innerHTML=html;
+}
+function searchCalc(q){
+  q=q.toLowerCase().trim();
+  document.querySelectorAll('#grid .grid').forEach(g=>{let any=false;
+    g.querySelectorAll('.tile').forEach(t=>{const s=!q||t.dataset.k.includes(q);t.style.display=s?'':'none';if(s)any=true;});
+    g.style.display=any?'':'none';if(g.previousElementSibling)g.previousElementSibling.style.display=any?'':'none';});
+}
+function route(){
+  const id=location.hash.replace('#/','');
+  if(!id||id==='home'){document.getElementById('view').style.display='none';document.getElementById('home').style.display='block';document.title='All-in-One Financial Calculator India — Tax, SIP, EMI, GST, FD (FY 2025-26)';window.scrollTo(0,0);}
+  else renderCalc(id);
+}
+window.addEventListener('hashchange',route);
+buildHome();route();
+</script>
+
+<!-- Structured data -->
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"WebApplication","name":"KitnaCalc — All-in-One Financial Calculator India","description":"Free Indian financial calculator suite: income tax (new vs old regime FY 2025-26), GST, SIP, lumpsum, EMI, FD, RD, PPF, NPS, EPF, gratuity, HRA and retirement.","applicationCategory":"FinanceApplication","operatingSystem":"Any (web)","inLanguage":"en-IN","offers":{"@type":"Offer","price":"0","priceCurrency":"INR"}}
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Does prepaying a loan save money?","acceptedAnswer":{"@type":"Answer","text":"Yes. Extra payments go straight to principal, reducing the interest charged over the remaining tenure and closing the loan sooner."}},{"@type":"Question","name":"Is it better to prepay or invest?","acceptedAnswer":{"@type":"Answer","text":"If your loan rate is higher than your expected investment return, prepaying usually wins; otherwise investing may be better."}}]}</script>
+</body>
+</html>
