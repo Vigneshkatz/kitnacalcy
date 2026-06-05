@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://vigneshkatz.github.io/kitnacalc/sitemap.xml

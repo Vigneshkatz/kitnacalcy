@@ -1,3 +1,0 @@
-User-agent: *
-Allow: /
-Sitemap: https://USERNAME.github.io/kitnacalc/sitemap.xml

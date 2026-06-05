@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 /* 1) EDIT THIS to your real published URL (no trailing slash) */
-const BASE_URL = 'https://github.com/Vigneshkatz/kitnacalc.git';
+const BASE_URL = 'https://vigneshkatz.github.io/kitnacalc';
 
 /* Optional analytics — paste your IDs and re-run build to track all 25 pages.
    GA4:     https://analytics.google.com  -> Admin -> Data streams -> Measurement ID (G-XXXXXXXXXX)
@@ -261,7 +261,7 @@ const PAGES = {
 
 /* ---------- build ---------- */
 const SRC = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
-const DIST = path.join(__dirname, 'dist');
+const DIST = path.join(__dirname, 'docs'); // GitHub Pages serves from /docs
 // Clean dist contents but PRESERVE .git (so re-running build doesn't break a deploy repo)
 if (fs.existsSync(DIST)) {
   for (const entry of fs.readdirSync(DIST)) {
@@ -347,7 +347,9 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
   + urls.map(u => `  <url><loc>${u}</loc><changefreq>monthly</changefreq></url>`).join('\n') + `\n</urlset>\n`;
 fs.writeFileSync(path.join(DIST, 'sitemap.xml'), sitemap);
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap.xml\n`);
+// Disable Jekyll — this is a plain static site, serve files as-is
+fs.writeFileSync(path.join(DIST, '.nojekyll'), '');
 
-console.log(`✓ Built ${ids.length} calculator pages + home into /dist`);
+console.log(`✓ Built ${ids.length} calculator pages + home into /docs`);
 console.log(`✓ sitemap.xml (${urls.length} URLs) + robots.txt`);
 if (BASE_URL.includes('YOUR-SITE')) console.log('⚠ Remember to set BASE_URL at the top of build.js to your real URL, then re-run.');
