@@ -15,6 +15,14 @@ const BASE_URL = 'https://vigneshkatz.github.io/kitnacalcy';
 const GA_ID = '';       // e.g. 'G-XXXXXXXXXX'
 const CLARITY_ID = '';  // e.g. 'abcde12345'
 
+/* Google Search Console verification — use the "HTML tag" method, paste the
+   content="..." value here (just the token, not the whole tag). */
+const GOOGLE_VERIFY = '';  // e.g. 'aBcD1234efGh...'
+
+/* Google Search Console — HTML FILE method: the filename Google gave you.
+   The build serves it at the site root so verification survives rebuilds. */
+const GOOGLE_VERIFY_FILE = 'google6f9978f37e03385d.html';
+
 /* 2) Per-calculator SEO copy. id must match the app's CALCS keys. */
 const PAGES = {
   'income-tax': {
@@ -279,6 +287,11 @@ function analyticsSnippet() {
   if (CLARITY_ID) s += `\n<script type="text/javascript">(function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y)})(window,document,"clarity","script","${CLARITY_ID}");</script>`;
   return s;
 }
+function headExtras() {
+  let s = '';
+  if (GOOGLE_VERIFY) s += `\n<meta name="google-site-verification" content="${GOOGLE_VERIFY}">`;
+  return s + analyticsSnippet();
+}
 function metaTags(canonical, title, desc) {
   return `\n<link rel="canonical" href="${canonical}">`
     + `\n<meta property="og:title" content="${title}">`
@@ -314,7 +327,7 @@ function makePage(id, p) {
   html = html.replace(/<body>/, `<body>\n<script>if(!location.hash)history.replaceState(null,'','#/${id}');</script>`);
   html = html.replace(/<section class="seo">[\s\S]*?<\/section>/, seoSection(p));
   html = html.replace(/<script type="application\/ld\+json">\s*\{"@context":"https:\/\/schema.org","@type":"FAQPage"[\s\S]*?<\/script>/, faqLd(p));
-  html = html.replace('</head>', analyticsSnippet() + '\n</head>');
+  html = html.replace('</head>', headExtras() + '\n</head>');
   const dir = path.join(DIST, id);
   fs.mkdirSync(dir, { recursive: true });
   fs.writeFileSync(path.join(dir, 'index.html'), html);
@@ -327,7 +340,7 @@ let home = SRC.replace(/(<meta name="theme-color"[^>]*>)/,
   + `\n<meta property="og:description" content="24 free Indian financial calculators: income tax, GST, SIP, EMI, FD, RD, PPF, NPS and more.">`
   + `\n<meta property="og:type" content="website">\n<meta property="og:url" content="${BASE_URL}/">`
   + `\n<meta name="twitter:card" content="summary">`);
-home = home.replace('</head>', analyticsSnippet() + '\n</head>');
+home = home.replace('</head>', headExtras() + '\n</head>');
 fs.writeFileSync(path.join(DIST, 'index.html'), home);
 
 // per-calculator pages
@@ -349,6 +362,8 @@ fs.writeFileSync(path.join(DIST, 'sitemap.xml'), sitemap);
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap.xml\n`);
 // Disable Jekyll — this is a plain static site, serve files as-is
 fs.writeFileSync(path.join(DIST, '.nojekyll'), '');
+// Google Search Console HTML-file verification (regenerated each build)
+if (GOOGLE_VERIFY_FILE) fs.writeFileSync(path.join(DIST, GOOGLE_VERIFY_FILE), `google-site-verification: ${GOOGLE_VERIFY_FILE}`);
 
 console.log(`✓ Built ${ids.length} calculator pages + home into /docs`);
 console.log(`✓ sitemap.xml (${urls.length} URLs) + robots.txt`);
