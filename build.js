@@ -7,7 +7,7 @@ const fs = require('fs');
 const path = require('path');
 
 /* 1) EDIT THIS to your real published URL (no trailing slash) */
-const BASE_URL = 'https://vigneshkatz.github.io/kitnacalc';
+const BASE_URL = 'https://vigneshkatz.github.io/kitnacalcy';
 
 /* Optional analytics — paste your IDs and re-run build to track all 25 pages.
    GA4:     https://analytics.google.com  -> Admin -> Data streams -> Measurement ID (G-XXXXXXXXXX)

@@ -2,7 +2,7 @@
 
 **India's all-in-one financial calculator.** *Kitna tax? Kitna EMI? Kitna SIP?* — one place for every money calculation.
 
-🔗 **Live:** https://vigneshkatz.github.io/kitnacalc/
+🔗 **Live:** https://vigneshkatz.github.io/kitnacalcy/
 
 24 fast, free calculators for India. No sign-up, no login, works offline — and **no data ever leaves your device** (everything runs in your browser).
 
