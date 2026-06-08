@@ -60,6 +60,8 @@
   .brow{display:flex;justify-content:space-between;font-size:.88rem;padding:5px 0}
   .brow span:last-child{font-variant-numeric:tabular-nums}
   .brow.total{font-weight:800;font-size:1.05rem;border-top:1px solid var(--line);margin-top:6px;padding-top:9px;color:var(--accent)}
+  .brow.sub{color:var(--muted);font-size:.82rem}
+  .pos{color:var(--good)}.neg{color:#dc2626}
   .compare{display:flex;gap:12px}
   .regime{flex:1;border:2px solid var(--line);border-radius:12px;padding:14px;text-align:center}
   .regime.best{border-color:var(--accent);background:var(--accent-soft)}
@@ -120,6 +122,8 @@
 /* ===================== helpers ===================== */
 const state = { salaried:1, gstMode:'add', gstSupply:'intra' };
 function inr(n){ if(!isFinite(n))n=0; return '₹' + Math.round(n).toLocaleString('en-IN'); }
+function inr2(n){ if(!isFinite(n))n=0; const neg=n<0; n=Math.abs(Math.round(n*100)/100); const s='₹'+n.toLocaleString('en-IN',{maximumFractionDigits:2}); return neg?'-'+s:s; }
+function num2(n){ return (Math.round(n*100)/100).toLocaleString('en-IN',{maximumFractionDigits:2}); }
 function sipFV(P,annual,years){const i=annual/1200,m=Math.round(years*12);return i===0?P*m:P*((Math.pow(1+i,m)-1)/i)*(1+i);}
 function emiCalc(P,annual,years){const i=annual/1200,m=Math.round(years*12);return i===0?P/m:P*i*Math.pow(1+i,m)/(Math.pow(1+i,m)-1);}
 
@@ -229,6 +233,7 @@ function calcGst(){
 const M=(id,label,def,extra={})=>({id,label,default:def,type:'num',prefix:'₹',...extra});
 const PCT=(id,label,def,extra={})=>({id,label,default:def,type:'num',suffix:'%',...extra});
 const YR=(id,label,def,extra={})=>({id,label,default:def,type:'num',suffix:'yrs',...extra});
+const NUM=(id,label,def,extra={})=>({id,label,default:def,type:'num',...extra});
 
 const CALCS={
   'income-tax':{cat:'Tax & Salary',icon:'🧾',title:'Income Tax',blurb:'New vs old regime, FY 2025-26',custom:'tax',kw:'tax regime salary 87a rebate'},
@@ -340,6 +345,56 @@ const CALCS={
     fields:[M('bill','Bill amount (₹)',1500),PCT('tip','Tip',10),{id:'people',label:'Split between',type:'num',suffix:'ppl',default:2}],
     compute(v){const t=v.bill*v.tip/100,total=v.bill+t,ppl=Math.max(1,v.people);
       return{rows:[{label:'Tip',value:inr(t)},{label:'Total bill',value:inr(total)},{label:`Per person (${ppl})`,value:inr(total/ppl),strong:true}]};}},
+
+  'brokerage':{cat:'Trading',icon:'🧾',title:'Brokerage & Charges',blurb:'Delivery / intraday / F&O — full breakdown',kw:'brokerage zerodha stt charges intraday delivery fno',
+    fields:[{id:'segment',label:'Segment',type:'select',default:'intraday',options:[{v:'delivery',l:'Equity delivery'},{v:'intraday',l:'Equity intraday'},{v:'futures',l:'Equity futures'},{v:'options',l:'Equity options'}]},M('buy','Buy price (₹)',1000),M('sell','Sell price (₹)',1010),NUM('qty','Quantity',100)],
+    compute(v){const seg=v.segment,qty=v.qty,tBuy=v.buy*qty,tSell=v.sell*qty,turnover=tBuy+tSell;
+      let brokerage=0,stt=0,exch=0,stamp=0;
+      if(seg==='delivery'){brokerage=0;stt=(tBuy+tSell)*0.001;exch=turnover*0.0000297;stamp=tBuy*0.00015;}
+      else if(seg==='intraday'){brokerage=Math.min(tBuy*0.0003,20)+Math.min(tSell*0.0003,20);stt=tSell*0.00025;exch=turnover*0.0000297;stamp=tBuy*0.00003;}
+      else if(seg==='futures'){brokerage=Math.min(tBuy*0.0003,20)+Math.min(tSell*0.0003,20);stt=tSell*0.0002;exch=turnover*0.0000173;stamp=tBuy*0.00002;}
+      else{brokerage=40;stt=tSell*0.001;exch=turnover*0.0003503;stamp=tBuy*0.00003;}
+      const sebi=turnover*0.000001,gst=(brokerage+exch+sebi)*0.18,dp=seg==='delivery'?15.93:0;
+      const total=brokerage+stt+exch+sebi+stamp+gst+dp,gross=tSell-tBuy,net=gross-total,be=qty>0?total/qty:0;
+      const rows=[{label:'Turnover (buy + sell)',value:inr2(turnover),sub:true},{label:'Brokerage',value:inr2(brokerage)},{label:'STT / CTT',value:inr2(stt)},{label:'Exchange txn charges',value:inr2(exch)},{label:'SEBI charges',value:inr2(sebi)},{label:'Stamp duty',value:inr2(stamp)},{label:'GST (18%)',value:inr2(gst)}];
+      if(dp)rows.push({label:'DP charges',value:inr2(dp)});
+      rows.push({label:'Total charges',value:inr2(total),strong:true});
+      rows.push({label:'Gross P&L',value:inr2(gross),cls:gross>=0?'pos':'neg'});
+      rows.push({label:'Net P&L (after charges)',value:inr2(net),strong:true,cls:net>=0?'pos':'neg'});
+      rows.push({label:'Breakeven move needed',value:'₹'+num2(be)+' / share'});
+      return{rows,note:'Discount-broker (Zerodha-style) NSE model. Rates as of FY2024-25 and may change; verify with your broker.'};}},
+  'positionsize':{cat:'Trading',icon:'🎯',title:'Position Size',blurb:'Shares to buy for a fixed risk',kw:'position size risk per trade',
+    fields:[M('capital','Trading capital (₹)',100000),PCT('risk','Risk per trade',1),M('entry','Entry price (₹)',500),M('stoploss','Stop-loss price (₹)',485)],
+    compute(v){const riskAmt=v.capital*v.risk/100,per=Math.abs(v.entry-v.stoploss),qty=per>0?Math.floor(riskAmt/per):0;
+      return{rows:[{label:'Amount at risk',value:inr2(riskAmt)},{label:'Risk per share',value:inr2(per)},{label:'Shares to buy',value:num2(qty),strong:true},{label:'Position value',value:inr2(qty*v.entry)}],note:'Never risk more than your planned % on a single trade.'};}},
+  'riskreward':{cat:'Trading',icon:'⚖️',title:'Risk : Reward',blurb:'R:R from entry, SL & target',kw:'risk reward ratio',
+    fields:[M('entry','Entry price (₹)',500),M('stoploss','Stop-loss (₹)',485),M('target','Target (₹)',545)],
+    compute(v){const risk=Math.abs(v.entry-v.stoploss),reward=Math.abs(v.target-v.entry),rr=risk>0?reward/risk:0;
+      return{rows:[{label:'Risk per share',value:inr2(risk)},{label:'Reward per share',value:inr2(reward)},{label:'Risk : Reward',value:'1 : '+num2(rr),strong:true}],note:rr<1.5?'⚠️ Below 1:1.5 — reward may not justify the risk.':'A ratio of 1:2 or higher is generally preferred.'};}},
+  'targetsl':{cat:'Trading',icon:'📐',title:'Target & Stop-loss',blurb:'SL/target prices from %',kw:'stop loss target price',
+    fields:[M('entry','Entry price (₹)',500),PCT('slpct','Stop-loss %',3),PCT('tgtpct','Target %',6),{id:'side',label:'Side',type:'select',default:'long',options:[{v:'long',l:'Long (buy)'},{v:'short',l:'Short (sell)'}]}],
+    compute(v){const long=v.side==='long';const sl=long?v.entry*(1-v.slpct/100):v.entry*(1+v.slpct/100);const tg=long?v.entry*(1+v.tgtpct/100):v.entry*(1-v.tgtpct/100);const rr=v.slpct>0?v.tgtpct/v.slpct:0;
+      return{rows:[{label:'Stop-loss price',value:inr2(sl),cls:'neg'},{label:'Target price',value:inr2(tg),strong:true,cls:'pos'},{label:'Risk : Reward',value:'1 : '+num2(rr)}]};}},
+  'average':{cat:'Trading',icon:'🧮',title:'Average Price',blurb:'Average of two buys',kw:'average price cost averaging add',
+    fields:[NUM('qty1','Quantity 1',100),M('price1','Price 1 (₹)',500),NUM('qty2','Quantity 2',100),M('price2','Price 2 (₹)',460)],
+    compute(v){const tq=v.qty1+v.qty2,tc=v.qty1*v.price1+v.qty2*v.price2,avg=tq>0?tc/tq:0;
+      return{rows:[{label:'Total quantity',value:num2(tq)},{label:'Total invested',value:inr2(tc)},{label:'Average price',value:inr2(avg),strong:true}]};}},
+  'margin':{cat:'Trading',icon:'🏦',title:'Margin / Leverage',blurb:'Margin needed for a position',kw:'margin leverage span',
+    fields:[M('price','Price (₹)',500),NUM('qty','Quantity',1000),NUM('leverage','Leverage (x)',5)],
+    compute(v){const cv=v.price*v.qty,lev=v.leverage>0?v.leverage:1,margin=cv/lev;
+      return{rows:[{label:'Contract / position value',value:inr2(cv)},{label:'Leverage',value:num2(lev)+'x'},{label:'Margin required',value:inr2(margin),strong:true}],note:'Simple leverage estimate. Real F&O margin (SPAN + exposure) is set by the exchange and differs.'};}},
+  'pnl':{cat:'Trading',icon:'💹',title:'Profit & Loss',blurb:'P&L and return % of a trade',kw:'profit loss pnl return',
+    fields:[{id:'side',label:'Side',type:'select',default:'long',options:[{v:'long',l:'Long (buy → sell)'},{v:'short',l:'Short (sell → buy)'}]},M('entry','Entry price (₹)',500),M('exit','Exit price (₹)',530),NUM('qty','Quantity',100)],
+    compute(v){const gross=(v.side==='long'?(v.exit-v.entry):(v.entry-v.exit))*v.qty,invested=v.entry*v.qty,pct=invested>0?gross/invested*100:0;
+      return{rows:[{label:'Turnover (entry)',value:inr2(invested)},{label:'Return %',value:num2(pct)+'%',cls:gross>=0?'pos':'neg'},{label:'Gross P&L',value:inr2(gross),strong:true,cls:gross>=0?'pos':'neg'}],note:'Excludes charges — use the Brokerage calculator for net P&L.'};}},
+  'cagr':{cat:'Trading',icon:'📈',title:'CAGR',blurb:'Annualised return',kw:'cagr annualised return',
+    fields:[M('initial','Initial value (₹)',100000),M('final','Final value (₹)',200000),NUM('years','Years',5)],
+    compute(v){const abs=v.initial>0?(v.final/v.initial-1)*100:0,cagr=(v.initial>0&&v.years>0)?(Math.pow(v.final/v.initial,1/v.years)-1)*100:0;
+      return{rows:[{label:'Times your money',value:num2(v.initial>0?v.final/v.initial:0)+'x'},{label:'Absolute return',value:num2(abs)+'%'},{label:'CAGR (per year)',value:num2(cagr)+'%',strong:true,cls:cagr>=0?'pos':'neg'}]};}},
+  'optionbe':{cat:'Trading',icon:'🎲',title:'Options Breakeven',blurb:'Breakeven & max loss for a buyer',kw:'option breakeven call put premium',
+    fields:[{id:'type',label:'Option type',type:'select',default:'call',options:[{v:'call',l:'Call (CE)'},{v:'put',l:'Put (PE)'}]},M('strike','Strike price (₹)',20000),M('premium','Premium (₹)',150),NUM('qty','Quantity (lot size × lots)',50)],
+    compute(v){const be=v.type==='call'?v.strike+v.premium:v.strike-v.premium,maxloss=v.premium*v.qty;
+      return{rows:[{label:'Premium paid',value:inr2(maxloss)},{label:'Max loss (buyer)',value:inr2(maxloss),cls:'neg'},{label:'Breakeven price',value:inr2(be),strong:true}],note:v.type==='call'?'Call breakeven = strike + premium. Profit above this at expiry.':'Put breakeven = strike − premium. Profit below this at expiry.'};}},
 };
 
 /* ===================== rendering / router ===================== */
@@ -352,7 +407,7 @@ function fieldHTML(f){
 }
 function showResult(res){
   const el=document.getElementById('calcResult');el.style.display='block';
-  el.innerHTML='<h2>Result</h2>'+res.rows.map(r=>`<div class="brow ${r.strong?'total':''}"><span>${r.label}</span><span>${r.value}</span></div>`).join('')+(res.note?`<div class="muted" style="margin-top:10px">${res.note}</div>`:'');
+  el.innerHTML='<h2>Result</h2>'+res.rows.map(r=>`<div class="brow ${r.strong?'total':''} ${r.sub?'sub':''}"><span>${r.label}</span><span class="${r.cls||''}">${r.value}</span></div>`).join('')+(res.note?`<div class="muted" style="margin-top:10px">${res.note}</div>`:'');
 }
 function recompute(){
   const c=CALCS[currentCalc];if(!c||c.custom)return;const v={};
@@ -374,7 +429,7 @@ function renderCalc(id){
 }
 function buildHome(){
   const cats={};Object.entries(CALCS).forEach(([id,c])=>{(cats[c.cat]=cats[c.cat]||[]).push([id,c]);});
-  const order=['Tax & Salary','Investments','Loans','Retirement','Everyday'];let html='';
+  const order=['Tax & Salary','Investments','Trading','Loans','Retirement','Everyday'];let html='';
   order.forEach(cat=>{if(!cats[cat])return;html+=`<h3 class="cattitle">${cat}</h3><div class="grid">`+cats[cat].map(([id,c])=>`<a class="tile" href="${id}/index.html" data-k="${(c.title+' '+(c.kw||'')).toLowerCase()}"><span class="tic">${c.icon}</span><span class="tname">${c.title}</span></a>`).join('')+`</div>`;});
   document.getElementById('grid').innerHTML=html;
 }

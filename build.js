@@ -264,6 +264,96 @@ const PAGES = {
       ['How much should I tip in India?', 'Tipping is optional; 5-10% of the bill is common at restaurants when a service charge is not already added.'],
       ['How do I split a bill with tip?', 'Add the tip to the bill, then divide the total by the number of people. The calculator does this instantly.']
     ]
+  },
+  'brokerage': {
+    h1: 'Brokerage & Charges Calculator (Delivery, Intraday, F&O)',
+    title: 'Brokerage Calculator India — Delivery, Intraday & F&O Charges',
+    desc: 'Free brokerage calculator for India. See exact charges — brokerage, STT, GST, exchange, SEBI, stamp duty — and net profit for delivery, intraday and F&O.',
+    intro: 'Calculate the exact charges on any equity trade — brokerage, STT, exchange transaction charges, GST, SEBI charges and stamp duty — for delivery, intraday and F&O, using a discount-broker (Zerodha-style) NSE model. See your net profit after all charges and the breakeven move needed.',
+    faqs: [
+      ['What charges apply to an intraday trade?', 'Intraday charges include brokerage (0.03% or ₹20 per order, whichever is lower), STT 0.025% on the sell side, exchange transaction charges, 18% GST, SEBI charges and stamp duty.'],
+      ['Is delivery trading free?', 'Many discount brokers charge zero brokerage on equity delivery, but you still pay STT (0.1% on both sides), exchange and SEBI charges, GST, stamp duty and DP charges on selling.']
+    ]
+  },
+  'positionsize': {
+    h1: 'Position Size Calculator',
+    title: 'Position Size Calculator — Shares to Buy by Risk',
+    desc: 'Calculate how many shares to buy based on your capital and risk per trade. Risk-based position sizing for traders.',
+    intro: 'Size every trade by risk, not by gut. Enter your capital, the percentage you are willing to risk per trade, your entry price and your stop-loss to get the exact number of shares to buy and the rupee amount at risk.',
+    faqs: [
+      ['How much should I risk per trade?', 'Many traders risk 1-2% of their capital per trade so that a string of losses does not wipe out the account.'],
+      ['How is position size calculated?', 'Divide the rupee amount you are willing to risk by the per-share risk (entry minus stop-loss) to get the number of shares.']
+    ]
+  },
+  'riskreward': {
+    h1: 'Risk-Reward Ratio Calculator',
+    title: 'Risk Reward Ratio Calculator — Entry, Stop-loss, Target',
+    desc: 'Calculate the risk-reward ratio of a trade from entry, stop-loss and target prices.',
+    intro: 'Check whether a trade is worth taking. Enter your entry, stop-loss and target prices to see the risk per share, reward per share and the risk-reward ratio.',
+    faqs: [
+      ['What is a good risk-reward ratio?', 'A ratio of 1:2 or higher is generally preferred — risking ₹1 to potentially make ₹2 or more.'],
+      ['How is risk-reward calculated?', 'Risk is the distance from entry to stop-loss; reward is the distance from entry to target. The ratio is reward divided by risk.']
+    ]
+  },
+  'targetsl': {
+    h1: 'Target & Stop-loss Calculator',
+    title: 'Target & Stop-loss Price Calculator (by %)',
+    desc: 'Calculate stop-loss and target prices from your entry price and chosen risk/reward percentages, for long or short trades.',
+    intro: 'Set your exits before you enter. Enter your entry price and the stop-loss and target percentages to get the exact stop-loss and target prices for a long or short position.',
+    faqs: [
+      ['How do I set a stop-loss percentage?', 'Many traders use a stop-loss of 2-5% for intraday and wider for positional trades, based on volatility and the trade setup.'],
+      ['Does this work for short trades?', 'Yes — choose the short side and the stop-loss is placed above entry with the target below.']
+    ]
+  },
+  'average': {
+    h1: 'Stock Average Price Calculator',
+    title: 'Average Price Calculator — Stock Cost Averaging',
+    desc: 'Calculate your average buy price after adding to a position at a different price.',
+    intro: 'Find your new average price after buying more of a stock at a different price. Enter the quantity and price of each purchase to get your total quantity, total invested and average cost.',
+    faqs: [
+      ['What is averaging down?', 'Buying more of a stock at a lower price to reduce your average cost. It lowers your breakeven but increases your position and risk.'],
+      ['How is average price calculated?', 'Add the total amount invested across all buys and divide by the total quantity.']
+    ]
+  },
+  'margin': {
+    h1: 'Margin Calculator',
+    title: 'Margin Calculator — Leverage & Margin Required',
+    desc: 'Estimate the margin required for a position from its value and your leverage.',
+    intro: 'Estimate the margin needed for a leveraged position. Enter the price, quantity and leverage to see the position value and the margin required.',
+    faqs: [
+      ['What is margin in trading?', 'Margin is the amount you must deposit to take a leveraged position; the broker funds the rest up to the allowed leverage.'],
+      ['Is this the exact F&O margin?', 'No — real F&O margin (SPAN + exposure) is set by the exchange and varies by contract and volatility. This is a simple leverage-based estimate.']
+    ]
+  },
+  'pnl': {
+    h1: 'Profit & Loss Calculator',
+    title: 'Profit & Loss Calculator — Trade P&L and Return %',
+    desc: 'Calculate the profit or loss and return percentage of a long or short trade.',
+    intro: 'Work out the profit or loss on any trade. Enter the side (long or short), entry and exit prices and quantity to see the gross P&L and return percentage.',
+    faqs: [
+      ['How is profit and loss calculated?', 'For a long trade, P&L = (exit − entry) × quantity. For a short trade it is (entry − exit) × quantity.'],
+      ['Does this include charges?', 'No — this shows gross P&L. Use the Brokerage calculator to see net profit after all charges.']
+    ]
+  },
+  'cagr': {
+    h1: 'CAGR Calculator',
+    title: 'CAGR Calculator — Annualised Return on Investment',
+    desc: 'Calculate the compound annual growth rate (CAGR) of an investment from its start and end value.',
+    intro: 'Measure the annualised return of an investment. Enter the initial value, final value and number of years to get the absolute return and the CAGR.',
+    faqs: [
+      ['What is CAGR?', 'Compound Annual Growth Rate — the smoothed yearly rate at which an investment grew from its start value to its end value.'],
+      ['What is the CAGR formula?', 'CAGR = (final value / initial value)^(1 / years) − 1.']
+    ]
+  },
+  'optionbe': {
+    h1: 'Options Breakeven Calculator',
+    title: 'Options Breakeven Calculator — Call & Put',
+    desc: 'Calculate the breakeven price and max loss for buying a call or put option.',
+    intro: 'Know where an option starts making money. Enter the option type, strike and premium to get the breakeven price and the maximum loss for an option buyer.',
+    faqs: [
+      ['How is option breakeven calculated?', 'For a call, breakeven = strike + premium. For a put, breakeven = strike − premium.'],
+      ['What is the max loss when buying an option?', 'An option buyer\'s maximum loss is the total premium paid.']
+    ]
   }
 };
 
