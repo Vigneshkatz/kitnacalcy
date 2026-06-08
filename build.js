@@ -7,7 +7,9 @@ const fs = require('fs');
 const path = require('path');
 
 /* 1) EDIT THIS to your real published URL (no trailing slash) */
-const BASE_URL = 'https://vigneshkatz.github.io/kitnacalcy';
+const BASE_URL = 'https://kitnacalc.in';
+/* Custom domain — written to docs/CNAME each build so GitHub Pages keeps serving it. */
+const CUSTOM_DOMAIN = 'kitnacalc.in';
 
 /* Optional analytics — paste your IDs and re-run build to track all 25 pages.
    GA4:     https://analytics.google.com  -> Admin -> Data streams -> Measurement ID (G-XXXXXXXXXX)
@@ -452,6 +454,8 @@ fs.writeFileSync(path.join(DIST, 'sitemap.xml'), sitemap);
 fs.writeFileSync(path.join(DIST, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${BASE_URL}/sitemap.xml\n`);
 // Disable Jekyll — this is a plain static site, serve files as-is
 fs.writeFileSync(path.join(DIST, '.nojekyll'), '');
+// Custom domain for GitHub Pages (regenerated each build so it survives)
+if (CUSTOM_DOMAIN) fs.writeFileSync(path.join(DIST, 'CNAME'), CUSTOM_DOMAIN);
 // Google Search Console HTML-file verification (regenerated each build)
 if (GOOGLE_VERIFY_FILE) fs.writeFileSync(path.join(DIST, GOOGLE_VERIFY_FILE), `google-site-verification: ${GOOGLE_VERIFY_FILE}`);
 
